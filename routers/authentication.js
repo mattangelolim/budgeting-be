@@ -6,11 +6,11 @@ const Users = require("../models/user")
 
 router.post("/signin/user", async (req, res) => {
     try {
-        const { username, password } = req.body
+        const { email, password } = req.body
 
         const ifUserExist = await Users.findOne({
             where: {
-                username: username
+                email: email
             }
         })
         if (!ifUserExist) {
@@ -68,6 +68,15 @@ router.post("/signup/user", async (req, res) => {
         res.status(500).json({ message: error.message })
     }
 })
+
+// router.get("/check/user", async (req,res ) =>{
+//     try {
+
+//     } catch (error) {
+//         console.error(error)
+//         res.status(500).json({ message: error.message })
+//     }
+// })
 
 router.post("/logout/user", async (req, res) => {
     try {

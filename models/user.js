@@ -27,11 +27,11 @@ const Users = sequelize.define("Users", {
         allowNull: false,
     },
     isDone: {
-        type: DataTypes.ENUM[1, 0],
-        defaultValue: 0
+        type: DataTypes.ENUM("1", "0"),
+        defaultValue: "0"
     }
 });
 
-Users.sync()
+// Users.sync()
 
 module.exports = Users;

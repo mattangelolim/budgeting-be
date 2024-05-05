@@ -11,9 +11,13 @@ app.use(cookieParser());
 app.use(bodyParser.json());
 app.use(express.urlencoded({ extended: true }));
 
-app.get("/", (req, res) => {
-    res.send("hello world")
-})
+
+const Authentication = require("./routers/authentication")
+const accChecker = require("./routers/accountChecker")
+const budgeting = require("./routers/budgeting")
+
+
+app.use("/mb", Authentication, accChecker, budgeting)
 
 app.listen(process.env.PORT, () => {
     console.log("Listening on port", process.env.PORT)
