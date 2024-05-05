@@ -1,6 +1,7 @@
 const express = require("express")
 const router = express.Router()
 const BudgetTF = require("../models/budgetTF")
+const User = require("../models/user")
 const jwt = require('jsonwebtoken');
 
 router.get("/checktf/user", async (req, res) => {
@@ -9,7 +10,7 @@ router.get("/checktf/user", async (req, res) => {
         const decodedToken = jwt.verify(token, `${process.env.SECRETKEY}`);
         const email = decodedToken.email;
 
-        console.log(token)
+        // console.log(token)
 
         const checkTfUser = await BudgetTF.findOne({
             where: {
@@ -18,9 +19,21 @@ router.get("/checktf/user", async (req, res) => {
             attributes: ["Timeframe"]
         })
         if (!checkTfUser) {
-            return res.status(400).json({ isDone: false, message: "Please Input Budget Timeframe First" })
+            return res.json({ isDone: false, message: "Please Input Budget Timeframe First" })
         } else {
-            res.status(200).json({ isDone: true, Timeframe: checkTfUser.Timeframe });
+            const checkUserStatus = await User.findOne({
+                where: {
+                    email: email
+                },
+                attributes: ["isDone"]
+            })
+            console.log(checkUserStatus.isDone)
+            if (checkUserStatus.isDone === "0") {
+                res.json({ isDone: false, Timeframe: checkTfUser.Timeframe });
+            } else {
+                res.json({ isDone: true, Timeframe: checkTfUser.Timeframe });
+            }
+
         }
 
     } catch (error) {
