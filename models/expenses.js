@@ -32,6 +32,10 @@ const expenses = sequelize.define("expenses", {
     date:{
         type: DataTypes.STRING,
         allowNull:false
+    },
+    TF_id:{
+        type: DataTypes.STRING,
+        allowNull:false
     }
 });
 

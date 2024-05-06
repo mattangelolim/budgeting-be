@@ -30,6 +30,10 @@ const BudgetTF = sequelize.define("BudgetTF", {
     Timeframe: {
         type: DataTypes.ENUM("Daily", "Weekly", "Monthly"),
         defaultValue: "Daily"
+    },
+    TF_id: {
+        type: DataTypes.STRING,
+        allowNull: false
     }
 });
 

@@ -45,24 +45,35 @@ router.get("/checktf/user", async (req, res) => {
 
 router.post("/select/timeframe", async (req, res) => {
     try {
-        const token = req.cookies.token
-        console.log(token)
+        const token = req.cookies.token;
         const decodedToken = jwt.verify(token, `${process.env.SECRETKEY}`);
         const email = decodedToken.email;
 
         const { income, Timeframe } = req.body;
 
+        // Function to generate random alphanumeric string
+        function generateRandomString(length) {
+            const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+            let result = '';
+            for (let i = 0; i < length; i++) {
+                result += characters.charAt(Math.floor(Math.random() * characters.length));
+            }
+            return result;
+        }
+
+        const TF_id = generateRandomString(8);
         const inputBudgetTF = await BudgetTF.create({
             email: email,
             income: income,
-            Timeframe: Timeframe
-        })
+            Timeframe: Timeframe,
+            TF_id
+        });
 
-        res.json(inputBudgetTF)
+        res.json(inputBudgetTF);
     } catch (error) {
-        console.error(error)
-        res.status(500).json({ message: error.message })
+        console.error(error);
+        res.status(500).json({ message: error.message });
     }
-})
+});
 
 module.exports = router
