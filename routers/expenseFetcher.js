@@ -71,20 +71,22 @@ router.get("/user/expenses-summary", async (req, res) => {
             const { date, thisPercentage, allocated_amount } = expense;
             if (!summary[date]) {
                 summary[date] = {
-                    totalExpenses: 0,
+                    totalIncome: 0,
                     savings: 0,
                     maxPercentageExpense: {
                         category: "",
-                        percentage: 0
+                        percentage: 0,
+                        amount: 0
                     }
                 };
             }
 
-            summary[date].totalExpenses += allocated_amount;
+            summary[date].totalIncome += allocated_amount;
             summary[date].savings += 100 - thisPercentage; 
             if (thisPercentage > summary[date].maxPercentageExpense.percentage && expense.category !== "Savings") {
                 summary[date].maxPercentageExpense.category = expense.category;
                 summary[date].maxPercentageExpense.percentage = thisPercentage;
+                summary[date].maxPercentageExpense.amount = allocated_amount;
             }
         });
 
