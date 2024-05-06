@@ -16,9 +16,11 @@ const Authentication = require("./routers/authentication")
 const accChecker = require("./routers/accountChecker")
 const budgeting = require("./routers/budgeting")
 const budgetFetcher = require("./routers/budgetFetcher")
+const categories = require("./routers/categoriesFetcher")
+const expenses = require("./routers/expenseFetcher")
 
 
-app.use("/mb", Authentication, accChecker, budgeting, budgetFetcher)
+app.use("/mb", Authentication, accChecker, budgeting, budgetFetcher, categories, expenses)
 
 app.listen(process.env.PORT, () => {
     console.log("Listening on port", process.env.PORT)
