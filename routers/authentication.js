@@ -23,7 +23,7 @@ router.post("/signin/user", async (req, res) => {
             return res.status(204).json({ message: "wrong password" })
         }
 
-        const token = jwt.sign({ userId: ifUserExist.id, mobile: ifUserExist.mobile, email: ifUserExist.email, username: ifUserExist.username }, process.env.SECRETKEY, {
+        const token = jwt.sign({ userId: ifUserExist.id, mobile: ifUserExist.mobile, email: ifUserExist.email, username: ifUserExist.username, name: ifUserExist.name}, process.env.SECRETKEY, {
             expiresIn: "8h",
         });
 
@@ -39,7 +39,7 @@ router.post("/signin/user", async (req, res) => {
 
 router.post("/signup/user", async (req, res) => {
     try {
-        const { mobile, email, username, password } = req.body
+        const { name, mobile, email, username, password } = req.body
 
         const findIfExisting = await Users.findOne({
             where: {
@@ -55,6 +55,7 @@ router.post("/signup/user", async (req, res) => {
         const hashedPassword = await bcrypt.hash(password, 10)
 
         const newAdmin = await Users.create({
+            name,
             mobile,
             email,
             username,
