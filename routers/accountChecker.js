@@ -19,7 +19,7 @@ router.get("/checktf/user", async (req, res) => {
             attributes: ["Timeframe"]
         })
         if (!checkTfUser) {
-            return res.json({ isDone: false, message: "Please Input Budget Timeframe First" })
+            return res.json({ isDone: null, message: "Please Input Budget Timeframe First" })
         } else {
             const checkUserStatus = await User.findOne({
                 where: {
@@ -27,7 +27,7 @@ router.get("/checktf/user", async (req, res) => {
                 },
                 attributes: ["isDone"]
             })
-            console.log(checkUserStatus.isDone)
+
             if (checkUserStatus.isDone === "0") {
                 res.json({ isDone: false, Timeframe: checkTfUser.Timeframe });
             } else {

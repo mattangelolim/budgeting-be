@@ -19,6 +19,7 @@ router.get("/user/expenses", async (req, res) => {
             },
             attributes: ["TF_id"]
         })
+
         const expenses = await Expenses.findAll({
             where: {
                 email: email,
