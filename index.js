@@ -10,6 +10,8 @@ app.use(cors());
 app.use(cookieParser());
 app.use(bodyParser.json());
 app.use(express.urlencoded({ extended: true }));
+const fs = require("fs")
+const file = fs.readFileSync('./AAD326B5F8D3D6B26DF4A5BE3F5FA60A.txt')
 
 
 const Authentication = require("./routers/authentication")
@@ -20,6 +22,10 @@ const categories = require("./routers/categoriesFetcher")
 const expenses = require("./routers/expenseFetcher")
 
 app.use("/mb", Authentication, accChecker, budgeting, budgetFetcher, categories, expenses)
+
+app.get('/.well-known/pki-validation/AAD326B5F8D3D6B26DF4A5BE3F5FA60A.txt', (req, res) => {
+  res.sendFile('/home/ubuntu/budgeting-be/AAD326B5F8D3D6B26DF4A5BE3F5FA60A.txt')
+})
 
 app.listen(process.env.PORT, () => {
     console.log("Listening on port", process.env.PORT)
