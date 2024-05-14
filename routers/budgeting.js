@@ -103,6 +103,65 @@ router.post("/insert/expenses", async (req, res) => {
     }
 });
 
+router.post("/insert/one/expense", async (req, res) =>{
+    try {
+        const token = req.cookies.token;
+        const date = req.query.date;
+        const { category, percent } = req.body;
+
+        const decodedToken = jwt.verify(token, `${process.env.SECRETKEY}`);
+        const email = decodedToken.email;
+
+        // Fetch user's budget information
+        const userBudget = await BudgetTF.findOne({
+            where: {
+                email: email
+            },
+            attributes: ["TF_id", "income", "total_savings", "overall_expense"]
+        });
+
+        // Fetch savings for the given date
+        const savingsForDate = await Expenses.findOne({
+            where:{
+                email: email,
+                date: date
+            },
+            attributes:["thisPercentage", "allocated_amount"]
+        });
+
+        if (!userBudget || !savingsForDate) {
+            return res.status(404).json({ message: "User or savings information not found." });
+        }
+
+        // Calculate the capital amount of income
+        const capitalIncome = (savingsForDate.allocated_amount * 100) / savingsForDate.thisPercentage;
+
+        console.log(capitalIncome)
+
+        // Calculate the allocated amount for the new category
+        const allocatedAmountForCategory = (percent * capitalIncome) / 100;
+
+        console.log(allocatedAmountForCategory)
+
+        // Now you can proceed with inserting the new expense with the calculated allocated amount
+
+        // Example of inserting the new expense
+        // const newExpense = await Expenses.create({
+        //     email: email,
+        //     date: date,
+        //     category: category,
+        //     allocated_amount: allocatedAmountForCategory
+        // });
+
+        res.status(200).json({ allocatedAmountForCategory });
+        
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: error.message });
+    }
+})
+
+
 router.post("/input/income", async (req, res) => {
     try {
         const { income } = req.body;

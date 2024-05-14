@@ -290,30 +290,43 @@ router.get("/arima/expenses", async (req, res) => {
         }));
 
         // Prepare time series data
-        const timeSeriesData = formattedExpenses.map(({ totalAmount, totalPercentage }) => [totalAmount, totalPercentage]);
+        const timeSeriesData = formattedExpenses.map(({ totalAmount }) => totalAmount);
+        console.log(timeSeriesData)
 
-        // Specify p, d, and q values for ARIMA model
-        const p_value = 2;
-        const d_value = 1;
-        const q_value = 2;
+        const arimaConfig = {
+            p: 2, // AR order
+            d: 1, // I order
+            q: 1, // MA order
+            verbose: false
+        };
 
-        // Train ARIMA model
-        const arimaModel = new ARIMA({ p: p_value, d: d_value, q: q_value, verbose: false }); // Initialize ARIMA model with specified p, d, and q values
-        arimaModel.train(timeSeriesData); // Train ARIMA model
+        const arimaModel = new ARIMA(arimaConfig);
+        arimaModel.train(timeSeriesData);
 
-        // Predict the next 2 days' values
-        const forecast = arimaModel.predict(2); // Predict next 2 time steps
 
-        // Create objects for the forecasted days
-        const nextTwoDaysForecast = forecast.map(([totalAmount, totalPercentage], index) => {
-            let adjustedTotalPercentage = Math.round(totalPercentage);
-    adjustedTotalPercentage = Math.max(20, Math.min(adjustedTotalPercentage, 100)); // Ensure it's between 20 and 100
-    return {
-        date: `Predicted Day ${index + 1}`,
-        totalAmount: Math.round(totalAmount),
-        totalPercentage: adjustedTotalPercentage
-    };
-        });
+        const firstPredictedValue = Math.round(arimaModel.predict(1)[0]);
+
+        // Add the first predicted value to the time series data
+        const updatedTimeSeriesData = [...timeSeriesData, firstPredictedValue];
+
+        // Retrain ARIMA model with the updated data
+        arimaModel.train(updatedTimeSeriesData);
+
+        // Predict the next value (second predicted value)
+        const secondPredictedValue = Math.round(arimaModel.predict(1)[0]);
+
+        const nextTwoDaysForecast = [
+            {
+                date: 'Predicted Day 1',
+                totalAmount: firstPredictedValue,
+                totalPercentage: Math.round(firstPredictedValue * 0.1)
+            },
+            {
+                date: 'Predicted Day 2',
+                totalAmount: secondPredictedValue,
+                totalPercentage: Math.round(secondPredictedValue * 0.2)
+            }
+        ];
 
         // Combine the actual data and forecasted data
         const combinedData = [...formattedExpenses, ...nextTwoDaysForecast];
