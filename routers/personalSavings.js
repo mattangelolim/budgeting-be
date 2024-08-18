@@ -2,31 +2,17 @@ const express = require("express");
 const router = express.Router();
 const Savings = require("../models/savings");
 
-function randomizeFive(arr) {
-    // Step 1: Select 5 unique random indices
-    const indices = [];
-    while (indices.length < 5) {
-        const randIndex = Math.floor(Math.random() * arr.length);
-        if (!indices.includes(randIndex)) {
-            indices.push(randIndex);
-        }
+function getRandomizedTopFive(arr) {
+    // Ensure the array has at least 5 elements
+    if (arr.length <= 5) {
+        return arr; // Return the array as is if it's 5 or fewer elements
     }
 
-    // Step 2: Extract the elements at those indices
-    const elementsToShuffle = indices.map(index => arr[index]);
+    // Shuffle the array
+    const shuffledArray = arr.sort(() => Math.random() - 0.5);
 
-    // Step 3: Shuffle the selected elements
-    for (let i = elementsToShuffle.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [elementsToShuffle[i], elementsToShuffle[j]] = [elementsToShuffle[j], elementsToShuffle[i]];
-    }
-
-    // Step 4: Place the shuffled elements back into their original positions
-    indices.forEach((index, i) => {
-        arr[index] = elementsToShuffle[i];
-    });
-
-    return arr;
+    // Return only the top 5 elements from the shuffled array
+    return shuffledArray.slice(0, 5);
 }
 
 router.post("/personal/tips", async (req, res) => {
@@ -51,7 +37,7 @@ router.post("/personal/tips", async (req, res) => {
             attributes: ['category', 'description']
         });
 
-        const randomizedResults = randomizeFive(results);
+        const randomizedResults = getRandomizedTopFive(results);
 
         res.status(200).json(randomizedResults);
     } catch (error) {
