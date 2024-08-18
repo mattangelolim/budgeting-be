@@ -92,4 +92,49 @@ router.post("/logout/user", async (req, res) => {
     }
 })
 
+// Update Password Route
+router.post("/update/password", async (req, res) => {
+    try {
+        const token = req.cookies.token;
+
+        if (!token) {
+            return res.status(401).json({ message: "No token provided" });
+        }
+
+        // Verify the token
+        const decodedToken = jwt.verify(token, process.env.SECRETKEY);
+        const userId = decodedToken.userId;
+
+        // Retrieve the user
+        const user = await Users.findByPk(userId);
+
+        if (!user) {
+            return res.status(404).json({ message: "User not found" });
+        }
+
+        const { currentPassword, newPassword } = req.body;
+
+        // Check if current password matches
+        const isPasswordMatch = await bcrypt.compare(currentPassword, user.password);
+
+        if (!isPasswordMatch) {
+            return res.status(401).json({ message: "Current password is incorrect" });
+        }
+
+        // Hash the new password
+        const hashedNewPassword = await bcrypt.hash(newPassword, 10);
+
+        // Update the user's password
+        await Users.update(
+            { password: hashedNewPassword },
+            { where: { id: userId } }
+        );
+
+        res.status(200).json({ message: "Password updated successfully" });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: error.message });
+    }
+});
+
 module.exports = router
