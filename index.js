@@ -58,8 +58,9 @@ const budgeting = require("./routers/budgeting")
 const budgetFetcher = require("./routers/budgetFetcher")
 const categories = require("./routers/categoriesFetcher")
 const expenses = require("./routers/expenseFetcher")
+const savings = require("./routers/personalSavings")
 
-app.use("/mb", Authentication, accChecker, budgeting, budgetFetcher, categories, expenses)
+app.use("/mb", Authentication, accChecker, budgeting, budgetFetcher, categories, expenses, savings)
 
 
 app.listen(process.env.PORT, () => {
