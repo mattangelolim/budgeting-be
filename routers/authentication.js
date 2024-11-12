@@ -13,7 +13,7 @@ router.post("/signin/user", async (req, res) => {
                 email: email
             }
         })
-
+        
         if (!ifUserExist) {
             return res.status(204).json({ message: "user not found" })
         }
@@ -24,14 +24,13 @@ router.post("/signin/user", async (req, res) => {
             return res.status(204).json({ message: "wrong password" })
         }
 
-        const token = jwt.sign({ userId: ifUserExist.id, mobile: ifUserExist.mobile, email: ifUserExist.email, username: ifUserExist.username, name: ifUserExist.name }, process.env.SECRETKEY, {
+        const token = jwt.sign({ userId: ifUserExist.id, mobile: ifUserExist.mobile, email: ifUserExist.email, username: ifUserExist.username, name: ifUserExist.name}, process.env.SECRETKEY, {
             expiresIn: "8h",
         });
 
         res.cookie('token', token, { maxAge: 900000, httpOnly: true });
 
         res.status(200).json({ token });
-
 
     } catch (error) {
         console.error(error)
