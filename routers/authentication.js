@@ -13,7 +13,7 @@ router.post("/signin/user", async (req, res) => {
                 email: email
             }
         })
-        
+
         if (!ifUserExist) {
             return res.status(204).json({ message: "user not found" })
         }
@@ -24,7 +24,7 @@ router.post("/signin/user", async (req, res) => {
             return res.status(204).json({ message: "wrong password" })
         }
 
-        const token = jwt.sign({ userId: ifUserExist.id, mobile: ifUserExist.mobile, email: ifUserExist.email, username: ifUserExist.username, name: ifUserExist.name}, process.env.SECRETKEY, {
+        const token = jwt.sign({ userId: ifUserExist.id, mobile: ifUserExist.mobile, email: ifUserExist.email, username: ifUserExist.username, name: ifUserExist.name }, process.env.SECRETKEY, {
             expiresIn: "8h",
         });
 
@@ -37,6 +37,25 @@ router.post("/signin/user", async (req, res) => {
         res.status(500).json({ message: error.message })
     }
 })
+
+router.post("/update-fcm-token/user", async (req, res) => {
+    try {
+        const token = req.cookies.token;
+        if (!token) return res.status(401).json({ message: "No token provided" });
+
+        const { fcmToken } = req.body;
+        const decodedToken = jwt.verify(token, process.env.SECRETKEY);
+        const email = decodedToken.email;
+
+        await Users.update({ fcmToken }, { where: { email } });
+
+        res.status(200).json({ message: "FCM Token updated successfully" });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: error.message });
+    }
+});
+
 
 router.post("/signup/user", async (req, res) => {
     try {

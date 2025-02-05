@@ -11,7 +11,7 @@ const Users = sequelize.define("Users", {
     },
     name: {
         type: DataTypes.STRING,
-        allowNull: false  
+        allowNull: false
     },
     mobile: {
         type: DataTypes.STRING,
@@ -30,12 +30,18 @@ const Users = sequelize.define("Users", {
         type: DataTypes.STRING,
         allowNull: false,
     },
+    fcmToken: {
+        type: DataTypes.STRING,
+        allowNull: true,
+    },
     isDone: {
         type: DataTypes.ENUM("1", "0"),
         defaultValue: "0"
     }
 });
 
-// Users.sync()
+// Users.sync({ alter: true })
+//     .then(() => console.log("Users table updated"))
+//     .catch((err) => console.error("Error updating Users table:", err));
 
 module.exports = Users;
