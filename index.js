@@ -31,21 +31,34 @@ admin.initializeApp({
 const sendPushNotification = async (email, amount, date) => {
   try {
     const user = await User.findOne({ where: { email } });
+    console.log(user)
     if (!user || !user.fcmToken) {
       console.log(`No FCM token found for ${email}`);
       return;
     }
 
     const message = {
-      notification: {
-        title: "Upcoming Bill Reminder",
-        body: `You have a planned bill of $${amount} due on ${date}.`
-      },
-      token: user.fcmToken,
+      to: user.fcmToken, // Use Expo Push Token
+      sound: "alarm.wav",
+      title: "Bill Reminder",
+      body: `You have a planned bill of $${amount} due today.`,
+      data: { amount, date }, // Additional data (optional)
+      channelId: "default",
     };
-
-    await admin.messaging().send(message);
-    console.log(`Notification sent to ${email}`);
+    try {
+      await fetch("https://exp.host/--/api/v2/push/send", {
+        method: "POST",
+        headers: {
+          Accept: "application/json",
+          "Accept-Encoding": "gzip, deflate",
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(message),
+      });
+      console.log(`Notification sent to ${email}`);
+    } catch (error) {
+      console.log(`Error`, error);
+    }
   } catch (err) {
     console.error("Error sending push notification:", err);
   }

@@ -46,7 +46,12 @@ router.post("/update-fcm-token/user", async (req, res) => {
         const { fcmToken } = req.body;
         const decodedToken = jwt.verify(token, process.env.SECRETKEY);
         const email = decodedToken.email;
-
+        const findIfExisting = await Users.findOne({
+            where: {
+                email: email
+            }
+        })
+        console.log(findIfExisting)
         await Users.update({ fcmToken }, { where: { email } });
 
         res.status(200).json({ message: "FCM Token updated successfully" });
