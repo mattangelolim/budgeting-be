@@ -41,7 +41,7 @@ const sendPushNotification = async (email, amount, date) => {
       to: user.fcmToken, // Use Expo Push Token
       sound: "alarm.wav",
       title: "Bill Reminder",
-      body: `You have a planned bill of $${amount} due today.`,
+      body: `You have a planned bill of ${amount} due today.`,
       data: { amount, date }, // Additional data (optional)
       channelId: "default",
     };
