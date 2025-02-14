@@ -60,12 +60,12 @@ router.post("/insert/expenses", async (req, res) => {
 
             const allocatedAmount = (categoryData.percentage / 100) * userIncome;
 
-            if (categoryData.category === "Savings") {
-                totalAllocatedAmountForSavings += allocatedAmount;
-            } else {
-                totalAllocatedAmountForExpenses += allocatedAmount;
-            }
-
+            // if (categoryData.category === "Savings") {
+            //     totalAllocatedAmountForSavings += allocatedAmount;
+            // } else {
+            //     totalAllocatedAmountForExpenses += allocatedAmount;
+            // }
+            totalAllocatedAmountForExpenses += allocatedAmount;
 
             await Expenses.create({
                 email,
@@ -103,7 +103,7 @@ router.post("/insert/expenses", async (req, res) => {
     }
 });
 
-router.post("/insert/one/expense", async (req, res) =>{
+router.post("/insert/one/expense", async (req, res) => {
     try {
         const token = req.cookies.token;
         const date = req.query.date;
@@ -122,11 +122,11 @@ router.post("/insert/one/expense", async (req, res) =>{
 
         // Fetch savings for the given date
         const savingsForDate = await Expenses.findOne({
-            where:{
+            where: {
                 email: email,
                 date: date
             },
-            attributes:["thisPercentage", "allocated_amount"]
+            attributes: ["thisPercentage", "allocated_amount"]
         });
 
         if (!userBudget || !savingsForDate) {
@@ -154,7 +154,7 @@ router.post("/insert/one/expense", async (req, res) =>{
         // });
 
         res.status(200).json({ allocatedAmountForCategory });
-        
+
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: error.message });

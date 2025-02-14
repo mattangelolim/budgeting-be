@@ -72,10 +72,12 @@ router.get("/user/expenses-summary", async (req, res) => {
         const summary = {};
 
         expenses.forEach(expense => {
-            const { date, thisPercentage, allocated_amount } = expense;
+            const { date, thisPercentage, allocated_amount, category } = expense;
+
             if (!summary[date]) {
                 summary[date] = {
                     totalIncome: 0,
+                    totalExpenses: 0,
                     savings: 0,
                     maxPercentageExpense: {
                         category: "",
@@ -86,14 +88,21 @@ router.get("/user/expenses-summary", async (req, res) => {
             }
 
             summary[date].totalIncome += allocated_amount;
-            summary[date].savings += 100 - thisPercentage;
-            if (thisPercentage > summary[date].maxPercentageExpense.percentage && expense.category !== "Savings") {
-                summary[date].maxPercentageExpense.category = expense.category;
-                summary[date].maxPercentageExpense.percentage = thisPercentage;
-                summary[date].maxPercentageExpense.amount = allocated_amount;
+            if (category !== "Savings") {
+                summary[date].totalExpenses += allocated_amount;
+            }
+            if (thisPercentage > summary[date].maxPercentageExpense.percentage && category !== "Savings") {
+                summary[date].maxPercentageExpense = {
+                    category,
+                    percentage: thisPercentage,
+                    amount: allocated_amount
+                };
             }
         });
-
+        Object.keys(summary).forEach(date => {
+            summary[date].savings = summary[date].totalIncome - summary[date].totalExpenses;
+        });
+        console.log(summary);
         res.json(summary);
     } catch (error) {
         console.error(error);

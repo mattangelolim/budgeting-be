@@ -7,6 +7,7 @@ router.post("/input/plannedBills", async (req, res) => {
     try {
         const { amount, date } = req.body;
         const token = req.cookies.token;
+        const utcDate = new Date(date).toISOString();
 
         const decodedToken = jwt.verify(token, `${process.env.SECRETKEY}`);
         const email = decodedToken.email;
@@ -16,14 +17,14 @@ router.post("/input/plannedBills", async (req, res) => {
         if (!plannedBills) {
             plannedBills = await PlannedBills.create({
                 amount,
-                date,
+                date: utcDate,
                 email
             });
         } else {
             await PlannedBills.update(
                 {
                     amount,
-                    date
+                    date: utcDate
                 },
                 { where: { email: email } }
             );
