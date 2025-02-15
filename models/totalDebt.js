@@ -9,6 +9,10 @@ const TotalDebt = sequelize.define("TotalDebt", {
         primaryKey: true,
         autoIncrement: true,
     },
+    label: {
+        type: DataTypes.STRING,
+        allowNull: true
+    },
     totalDebtAmount: {
         type: DataTypes.STRING,
         allowNull: true
@@ -21,8 +25,15 @@ const TotalDebt = sequelize.define("TotalDebt", {
         type: DataTypes.STRING,
         allowNull: false
     },
+    status: {
+        type: DataTypes.ENUM("active", "paid"),
+        defaultValue: "active",
+        allowNull: true
+    }
 });
 
-TotalDebt.sync()
+// TotalDebt.sync({ alter: true })
+//     .then(() => console.log("TotalDebt table updated"))
+//     .catch((err) => console.error("Error updating TotalDebt table:", err));
 
 module.exports = TotalDebt;

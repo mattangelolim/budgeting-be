@@ -11,6 +11,10 @@ const PlannedBills = sequelize.define("PlannedBills", {
         type: DataTypes.STRING,
         allowNull: false,
     },
+    label: {
+        type: DataTypes.STRING,
+        allowNull: false,
+    },
     amount: {
         type: DataTypes.DECIMAL(10, 2),
         allowNull: false,
@@ -19,10 +23,17 @@ const PlannedBills = sequelize.define("PlannedBills", {
         type: DataTypes.DATE,
         allowNull: false,
     },
+    status: {
+        type: DataTypes.ENUM("active", "paid"),
+        defaultValue: "active",
+        allowNull: true
+    }
 }, {
     timestamps: true,
 });
 
-PlannedBills.sync()
+// PlannedBills.sync({ alter: true })
+//     .then(() => console.log("PlannedBills table updated"))
+//     .catch((err) => console.error("Error updating PlannedBills table:", err));
 
 module.exports = PlannedBills;
