@@ -25,30 +25,24 @@ router.post("/insert/expenses", async (req, res) => {
         if (!Array.isArray(budgetCategories)) {
             return res.status(400).json({ message: "Budget categories must be an array of objects." });
         }
-        const userIncome = checkUserIncome.income;
+
         const totalSavings = checkUserIncome.total_savings;
         const overallExpenses = checkUserIncome.overall_expense;
         const TF_id = checkUserIncome.TF_id;
 
-        const totalPercentage = budgetCategories.reduce((total, category) => total + category.percentage, 0);
-        const remainingPercentage = 100 - totalPercentage;
-
-        if (totalPercentage > 100) {
-            return res.status(400).json({ message: "Total percentage exceeds 100%." });
-        }
+        const totalAmount = budgetCategories.reduce((total, category) => total + category.percentage, 0);
+        // Extract savings and total expenses
+        const { savings, totalExpenses } = budgetCategories.reduce(
+            (acc, category) => ({
+                savings: acc.savings + (category.category.toLowerCase() === "savings" ? category.percentage : 0),
+                totalExpenses: acc.totalExpenses + (category.category.toLowerCase() !== "savings" ? category.percentage : 0),
+            }),
+            { savings: 0, totalExpenses: 0 }
+        );
 
         if (budgetCategories.length < 4) {
             return res.status(400).json({ message: "At least 4 budget categories are required." });
         }
-
-        // Automatically add a Savings category if there is remaining percentage
-        if (remainingPercentage > 0) {
-            budgetCategories.push({ category: "Savings", percentage: remainingPercentage });
-        }
-
-        // Calculate allocated amounts for each budget category
-        let totalAllocatedAmountForSavings = 0;
-        let totalAllocatedAmountForExpenses = 0;
 
         // Insert budget categories into the table
         for (const categoryData of budgetCategories) {
@@ -58,31 +52,23 @@ router.post("/insert/expenses", async (req, res) => {
                 continue;
             }
 
-            const allocatedAmount = (categoryData.percentage / 100) * userIncome;
-
-            // if (categoryData.category === "Savings") {
-            //     totalAllocatedAmountForSavings += allocatedAmount;
-            // } else {
-            //     totalAllocatedAmountForExpenses += allocatedAmount;
-            // }
-            totalAllocatedAmountForExpenses += allocatedAmount;
+            const percentage = (categoryData.percentage / totalAmount) * 100;
 
             await Expenses.create({
                 email,
-                TF_id: TF_id,
+                TF_id,
                 date,
                 category_type: category.category_type,
                 category: categoryData.category,
-                thisPercentage: categoryData.percentage,
-                allocated_amount: allocatedAmount
+                thisPercentage: percentage,
+                allocated_amount: categoryData.percentage
             });
         }
-        const updatedTotalSavings = totalSavings + totalAllocatedAmountForSavings;
-        const updatedOverallExpenses = overallExpenses + totalAllocatedAmountForExpenses;
+        const updatedTotalSavings = totalSavings + savings;
+        const updatedOverallExpenses = overallExpenses + totalExpenses;
         await BudgetTF.update({
             total_savings: updatedTotalSavings,
             overall_expense: updatedOverallExpenses,
-            income: 0
         }, {
             where: {
                 email: email
