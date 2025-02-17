@@ -79,4 +79,15 @@ router.get("/get/savingGoal", async (req, res) => {
     }
 })
 
+router.delete("/delete/savingGoal/:id", async (req, res) => {
+    try {
+        const { id } = req.params;
+        await SavingGoal.destroy({ where: { id } });
+        res.status(200).json({ message: "savingGoal deleted successfully" });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: error.message });
+    }
+});
+
 module.exports = router;
