@@ -14,15 +14,17 @@ const categories = sequelize.define("categories", {
         defaultValue: "Needs"
     },
     categories: {
-        type: DataTypes.ENUM("Food", "Transportation", "Utilities", "Rent", "Entertainment", "Clothing", "Savings", "Others"),
+        type: DataTypes.STRING,
+        allowNull: false
     },
-    correctPercentage:{
-        type:DataTypes.INTEGER,
-        allowNull:false
+    correctPercentage: {
+        type: DataTypes.INTEGER,
+        allowNull: false
     }
 });
 
 // categories.sync()
+categories.sync({ alter: true });
 
 
 module.exports = categories;

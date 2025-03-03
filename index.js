@@ -128,8 +128,9 @@ const currencyFetcher = require("./routers/currencyFetcher")
 const savingGoal = require("./routers/savingGoal")
 const totalDebt = require("./routers/totalDebt")
 const plannedBills = require("./routers/plannedBills")
+const addCategories = require("./routers/addCategory")
 
-app.use("/mb", Authentication, accChecker, budgeting, budgetFetcher, categories, expenses, savings, deleteAcc, currencyFetcher, savingGoal, totalDebt, plannedBills)
+app.use("/mb", Authentication, accChecker, budgeting, budgetFetcher, categories, expenses, savings, deleteAcc, currencyFetcher, savingGoal, totalDebt, plannedBills, addCategories)
 
 app.listen(process.env.PORT, () => {
   console.log("Listening on port", process.env.PORT)
