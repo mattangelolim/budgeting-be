@@ -68,7 +68,7 @@ router.get("/get/savingGoal", async (req, res) => {
             where: {
                 email: email
             },
-            attributes: ["description", "amount", "email"]
+            attributes: ["id", "description", "amount", "email"]
         })
 
         res.json(UserBudgetInfo)
@@ -82,7 +82,8 @@ router.get("/get/savingGoal", async (req, res) => {
 router.delete("/delete/savingGoal/:id", async (req, res) => {
     try {
         const { id } = req.params;
-        await SavingGoal.destroy({ where: { id } });
+        const response = await SavingGoal.destroy({ where: { id } });
+        console.log(response)
         res.status(200).json({ message: "savingGoal deleted successfully" });
     } catch (error) {
         console.error(error);
