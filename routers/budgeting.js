@@ -52,7 +52,7 @@ router.post("/insert/expenses", async (req, res) => {
                 continue;
             }
 
-            const percentage = (categoryData.percentage / totalAmount) * 100;
+            const percentage = (categoryData.percentage / totalAmount) * 100;        
 
             await Expenses.create({
                 email,

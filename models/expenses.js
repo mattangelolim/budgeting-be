@@ -18,8 +18,8 @@ const expenses = sequelize.define("expenses", {
         defaultValue: "Needs"
     },
     category: {
-        type: DataTypes.ENUM("Food", "Transportation", "Utilities", "Rent", "Entertainment", "Clothing", "Savings", "Others"),
-        defaultValue: "Food"
+        type: DataTypes.STRING,
+        allowNull: false
     },
     thisPercentage: {
         type: DataTypes.INTEGER,
@@ -29,13 +29,13 @@ const expenses = sequelize.define("expenses", {
         type: DataTypes.INTEGER,
         allowNull: false
     },
-    date:{
+    date: {
         type: DataTypes.STRING,
-        allowNull:false
+        allowNull: false
     },
-    TF_id:{
+    TF_id: {
         type: DataTypes.STRING,
-        allowNull:false
+        allowNull: false
     }
 });
 
